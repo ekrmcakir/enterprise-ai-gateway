@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  ai-gateway:
+    build: .
+    container_name: enterprise-ai-gateway
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Enterprise AI Gateway & Semantic Firewall
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8000
+      - MASTER_API_KEY=sk-gw-admin-secret
+      - USE_REDIS=true
+      - REDIS_URL=redis://redis:6379/0
+      - FIREWALL_ENABLED=true
+      - PII_MASKING_ENABLED=true
+      - CACHE_ENABLED=true
+      - CACHE_SIMILARITY_THRESHOLD=0.92
+      - RATE_LIMIT_ENABLED=true
+      - ENABLE_PROMETHEUS=true
+    depends_on:
+      - redis
+    networks:
+      - gateway-net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: gateway-redis-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - gateway-net
+
+networks:
+  gateway-net:
+    driver: bridge
+
+volumes:
+  redis_data:
