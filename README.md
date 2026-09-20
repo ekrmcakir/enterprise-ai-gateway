@@ -188,4 +188,4 @@ tests/test_semantic_cache.py ............. PASSED
 ---
 
 ## 📄 License
-Distributed under the Apache 2.0 License.
+This project is open-source under the [MIT License](LICENSE).
